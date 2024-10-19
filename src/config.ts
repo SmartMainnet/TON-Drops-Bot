@@ -13,6 +13,7 @@ catch {
 function createConfigFromEnvironment(environment: NodeJS.ProcessEnv) {
   const config = parseEnv(environment, {
     NODE_ENV: z.enum(['development', 'production']),
+    MONGODB_URI: z.string(),
     LOG_LEVEL: z
       .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'])
       .default('info'),

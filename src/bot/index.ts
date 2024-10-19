@@ -19,9 +19,11 @@ import {
 } from '#root/bot/features/index.js'
 import { errorHandler } from '#root/bot/handlers/index.js'
 import { i18n, isMultipleLocales } from '#root/bot/i18n.js'
-import { metrics, updateLogger } from '#root/bot/middlewares/index.js'
+import { autoDelete, metrics, updateLogger } from '#root/bot/middlewares/index.js'
 import { config } from '#root/config.js'
 import { logger } from '#root/logger.js'
+import { conversations } from '@grammyjs/conversations'
+import { newactivityConversation } from './conversations/index.js'
 
 interface Options {
   sessionStorage?: StorageAdapter<SessionData>
@@ -43,6 +45,7 @@ export function createBot(token: string, options: Options = {}) {
     protectedBot.use(updateLogger())
 
   protectedBot.use(metrics())
+  protectedBot.use(autoDelete())
   protectedBot.use(autoChatAction(bot.api))
   protectedBot.use(hydrateReply)
   protectedBot.use(hydrate())
@@ -53,6 +56,8 @@ export function createBot(token: string, options: Options = {}) {
     }),
   )
   protectedBot.use(i18n)
+  protectedBot.use(conversations())
+  protectedBot.use(newactivityConversation())
 
   // Handlers
   protectedBot.use(welcomeFeature)

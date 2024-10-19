@@ -7,6 +7,7 @@ import { createBot } from '#root/bot/index.js'
 import { config } from '#root/config.js'
 import { logger } from '#root/logger.js'
 import { createServer } from '#root/server/index.js'
+import mongoose from 'mongoose'
 
 function onShutdown(cleanUp: () => Promise<void>) {
   let isShuttingDown = false
@@ -29,6 +30,8 @@ async function startPolling() {
     await bot.stop()
   })
 
+  await mongoose.connect(config.MONGODB_URI)
+
   // start bot
   await bot.start({
     allowed_updates: config.BOT_ALLOWED_UPDATES,
@@ -43,6 +46,8 @@ async function startPolling() {
 async function startWebhook() {
   const bot = createBot(config.BOT_TOKEN)
   const server = createServer(bot)
+
+  await mongoose.connect(config.MONGODB_URI)
 
   let serverHandle: undefined | ReturnType<typeof serve>
   const startServer = () =>
